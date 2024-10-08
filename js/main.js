@@ -289,6 +289,7 @@ $(function () {
 
     ------------------------------------------- */
     $('.mil-menu-btn').on('click', function () {
+        console.log('object')
         $('.mil-menu-btn , .mil-mobile-menu').toggleClass('mil-active');
     });
     /* -------------------------------------------
