@@ -2,7 +2,7 @@
 
 Name: 		Aquarelle
 Version:    1.0
-�������أ�Http://www.bootstrapmb.com
+�������أ�Http://www.bootstrapmb.com
 
 p.s. I am available for Freelance hire (UI design, web development). mail: miller.themes@gmail.com
 
@@ -17,6 +17,95 @@ $(function () {
     preloader
 
     ------------------------------------------- */
+    // 从 localStorage 获取上次选择的语言，如果没有则根据浏览器语言选择
+    let currentLang = localStorage.getItem('selectedLanguage') || (navigator.language.startsWith('zh') ? 'cn' : 'en');
+
+    // 动态加载 i18next 库
+    $.getScript("https://unpkg.com/i18next@21.8.10/dist/umd/i18next.min.js", function () {
+        // 语言资源加载
+        const resources = {
+            en: '/locales/en.json',
+            cn: '/locales/cn.json'
+        };
+
+        // 加载当前语言的 JSON 文件
+        loadLanguage(currentLang);
+
+        // 点击多语言图标切换语言
+        $('#lang-toggle').click(function () {
+            currentLang = currentLang === 'en' ? 'cn' : 'en'; // 在英文和中文之间切换
+            localStorage.setItem('selectedLanguage', currentLang); // 将选择的语言存储到 localStorage
+            loadLanguage(currentLang);
+        });
+
+        // 加载并初始化对应的语言资源
+        function loadLanguage(lang) {
+            $.getJSON(resources[lang], function (data) {
+                i18next.init({
+                    lng: lang, // 设置当前语言
+                    debug: true, // 打开调试模式
+                    resources: {
+                        [lang]: {
+                            translation: data
+                        }
+                    }
+                }, function (err, t) {
+                    if (err) {
+                        console.error('Language initialization error:', err);
+                        return;
+                    }
+                    updateContent(); // 更新页面内容
+                });
+            }).fail(function () {
+                console.error('Failed to load language resource file:', resources[lang]);
+            });
+        }
+
+        // 替换页面上的所有 data-i18n 元素
+        function updateContent() {
+            $('[data-i18n]').each(function () {
+                const key = $(this).attr('data-i18n');
+                $(this).text(i18next.t(key));
+            });
+        }
+    });
+
+    // Web3.js集成
+    // 动态加载 Web3.js 库
+    $.getScript("https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.5.2/dist/web3.min.js", function () {
+        let web3;
+
+        // 初始化 Web3
+        if (typeof window.ethereum !== 'undefined') {
+            web3 = new Web3(window.ethereum);
+
+            // 连接钱包按钮点击事件
+            $('#wallet-connect-btn').click(async function () {
+                try {
+                    // 请求用户授权连接钱包
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    const walletAddress = accounts[0];
+
+                    // 将钱包地址显示在按钮上
+                    $('#wallet-connect-btn').text(walletAddress.substring(0, 6) + '...' + walletAddress.substring(walletAddress.length - 4));
+                } catch (error) {
+                    console.error("User denied wallet connection", error);
+                }
+            });
+
+            // 监听钱包账户更改
+            ethereum.on('accountsChanged', function (accounts) {
+                if (accounts.length > 0) {
+                    const walletAddress = accounts[0];
+                    $('#wallet-connect-btn').text(walletAddress.substring(0, 6) + '...' + walletAddress.substring(walletAddress.length - 4));
+                } else {
+                    $('#wallet-connect-btn').text("Connect Wallet");
+                }
+            });
+        } else {
+            console.error("No Web3 provider found. Please install MetaMask.");
+        }
+    });
     setTimeout(function () {
         $(".mil-loader-content").addClass("mil-active");
     }, 200);
@@ -307,5 +396,6 @@ $(function () {
             sticky.destroy();
         }
     }
-
+    $("#header").load("/components/header.html");
+    $("#footer").load("/components/footer.html");
 });
