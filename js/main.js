@@ -17,6 +17,8 @@ $(function () {
     preloader
 
     ------------------------------------------- */
+    $("#header").load("/components/header.html");
+    $("#footer").load("/components/footer.html");
     // 从 localStorage 获取上次选择的语言，如果没有则根据浏览器语言选择
     let currentLang = localStorage.getItem('selectedLanguage') || (navigator.language.startsWith('zh') ? 'cn' : 'en');
 
@@ -397,6 +399,5 @@ $(function () {
             sticky.destroy();
         }
     }
-    $("#header").load("/components/header.html");
-    $("#footer").load("/components/footer.html");
+
 });
