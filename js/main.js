@@ -17,25 +17,8 @@ $(function () {
     preloader
 
     ------------------------------------------- */
-    $.ajax({
-        url: "/components/header.html",
-        success: function (data) {
-            $("#header").html(data);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.error("Header load failed:", textStatus, errorThrown);
-        }
-    });
-
-    $.ajax({
-        url: "/components/footer.html",
-        success: function (data) {
-            $("#footer").html(data);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.error("Footer load failed:", textStatus, errorThrown);
-        }
-    });
+    $("#header").load("components/header.html");
+    $("#footer").load("components/footer.html");
     console.log($("#header"))
     // 从 localStorage 获取上次选择的语言，如果没有则根据浏览器语言选择
     let currentLang = localStorage.getItem('selectedLanguage') || (navigator.language.startsWith('zh') ? 'cn' : 'en');
